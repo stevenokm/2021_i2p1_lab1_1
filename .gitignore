@@ -9,3 +9,17 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+
+build
+
+tags*
+
+*.log
+*.out
+
+grade.csv
+
+*.jar
+
+jplag
+jplag_result

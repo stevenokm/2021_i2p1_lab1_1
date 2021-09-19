@@ -1,0 +1,27 @@
+cmake_minimum_required(VERSION 3.2.2)
+
+MACRO(SUBDIRLIST result curdir)
+  FILE(GLOB children RELATIVE ${curdir} ${curdir}/*)
+  SET(dirlist "")
+  FOREACH(child ${children})
+    IF(IS_DIRECTORY ${curdir}/${child})
+      LIST(APPEND dirlist ${child})
+    ENDIF()
+  ENDFOREACH()
+  SET(${result} ${dirlist})
+ENDMACRO()
+
+SUBDIRLIST(SUBDIRS ${CMAKE_SOURCE_DIR})
+list(REMOVE_ITEM SUBDIRS "testbench" "CMakeFiles" "build" "jplag" "jplag_result" ".git")
+
+project(lab1_1)
+
+FOREACH(subdir ${SUBDIRS})
+  get_filename_component(bin_name ${subdir} NAME)
+  set(bin_prefix "${CMAKE_PROJECT_NAME}_")
+  set(main_cpp "${subdir}/${bin_prefix}${bin_name}.cpp")
+  file(GLOB SRCS "${subdir}/*.cpp" "${subdir}/*.h")
+  list(REMOVE_ITEM SRCS ${main_cpp})
+  add_executable ("${bin_prefix}${bin_name}" ${main_cpp} ${SRCS})
+  target_link_libraries ("${bin_prefix}${bin_name}" m)
+ENDFOREACH()
