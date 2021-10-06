@@ -18,6 +18,8 @@ echo ${if1_list[@]} $if1_count
 #echo ${golden_of1[@]} ${#golden_of1[@]}
 cd ${OLDPWD}
 
+OIFS="$IFS"
+IFS=$'\n'
 dir_list=( `ls -d */` )
 dir_list=( ${dir_list[@]/$testbench} )
 dir_list=( ${dir_list[@]/$build_dir} )
@@ -25,6 +27,10 @@ dir_list=( ${dir_list[@]/$jplag_dir} )
 dir_list=( ${dir_list[@]/$jplag_result_dir} )
 dir_list=( ${dir_list[@]/.git} )
 echo ${dir_list[@]}
+IFS="$OIFS"
+#for i in "${dir_list[@]}"; do
+#  echo $i
+#done
 #exit
 
 echo "build cpp"
@@ -33,21 +39,23 @@ if [ ! -d $build_dir ]; then
 fi
 cd $build_dir
 cmake ..
-make
+make -k
 cd ${OLDPWD}
 #exit
 
 rm $oc
 printf "SID, Correctness, Format\n" > $oc
-for i in ${dir_list[@]}; do
+for i in "${dir_list[@]}"; do
   i=${i%%/}
+  i_list=( ${i} )
   p1_1c=0
   p1_1f=0
   p1_ca=0
   p1_cf=0
   error_list=""
 
-  student_exe="${build_dir}/${prefix}_${i}"
+  student_exe="${build_dir}/${prefix}_${i_list[0]}"
+  echo "eval ${student_exe}"
   if [ ! -f $student_exe ]; then
     echo "$student_exe not exist, skip."
     for file in ${if1_list[@]}; do
@@ -61,8 +69,8 @@ for i in ${dir_list[@]}; do
       if1="${testbench}/${file}"
       golden_of1="${if1/.in/.out}"
       echo "$student_exe < $if1 | tr -d \ n > $of1; diff -w -B -i $golden_of1 $of1 > $log1"
-      ${student_exe} < $if1 2> $log1 | tr -d '\n' > $of1
-      diff -w -B -i $golden_of1 $of1 >> $log1
+      ${student_exe} < "${if1}" 2> "${log1}" | tr -d '\n' > "${of1}"
+      diff -w -B -i $golden_of1 "${of1}" >> "${log1}"
       if [ $? == 0 ]; then 
         p1_1c=80; p1_1f=10;
         p1_ca=$(( $p1_ca + $p1_1c ))

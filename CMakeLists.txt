@@ -17,7 +17,9 @@ list(REMOVE_ITEM SUBDIRS "testbench" "CMakeFiles" "build" "jplag" "jplag_result"
 project(lab1_1)
 
 FOREACH(subdir ${SUBDIRS})
-  get_filename_component(bin_name ${subdir} NAME)
+  get_filename_component(bin_name_string ${subdir} NAME)
+  string(REPLACE " " ";" bin_name_list ${bin_name_string})
+  list(GET bin_name_list 0 bin_name)
   set(bin_prefix "${CMAKE_PROJECT_NAME}_")
   set(main_cpp "${subdir}/${bin_prefix}${bin_name}.cpp")
   file(GLOB SRCS "${subdir}/*.cpp" "${subdir}/*.h")
