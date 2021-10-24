@@ -20,13 +20,14 @@ cd ${OLDPWD}
 
 OIFS="$IFS"
 IFS=$'\n'
-dir_list=( `ls -d */` )
-dir_list=( ${dir_list[@]/$testbench} )
-dir_list=( ${dir_list[@]/$build_dir} )
-dir_list=( ${dir_list[@]/$jplag_dir} )
-dir_list=( ${dir_list[@]/$jplag_result_dir} )
-dir_list=( ${dir_list[@]/.git} )
-echo ${dir_list[@]}
+dir_list=( `ls -1 -d */` )
+#dir_list=( "${dir_list[@]/$testbench}" )
+#dir_list=( "${dir_list[@]/$build_dir}" )
+#dir_list=( "${dir_list[@]/$jplag_dir}" )
+#dir_list=( "${dir_list[@]/$jplag_result_dir}" )
+#dir_list=( "${dir_list[@]/.git}" )
+dir_count=${#dir_list[@]}
+echo ${dir_list[@]} $dir_count
 IFS="$OIFS"
 #for i in "${dir_list[@]}"; do
 #  echo $i
@@ -46,7 +47,16 @@ cd ${OLDPWD}
 rm $oc
 printf "SID, Correctness, Format\n" > $oc
 for i in "${dir_list[@]}"; do
-  i=${i%%/}
+  if [[ \
+    "${i}" == "${testbench}" || \
+    "${i}" == "${build_dir}" || \
+    "${i}" == "${jplag_dir}" || \
+    "${i}" == "${jplag_result_dir}" || \
+    "${i}" == ".git" ]]; then
+    continue
+  fi
+
+  i=${i%%/*}
   i_list=( ${i} )
   p1_1c=0
   p1_1f=0
