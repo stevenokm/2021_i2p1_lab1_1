@@ -17,6 +17,7 @@ int main() {
   scanf("%d", &c);
   d = msub(add(a, b), c);
   printf("result = %d", d);
+  //while(true);
   return 0;
 }
 int add(int x, int y) {

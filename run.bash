@@ -79,10 +79,24 @@ for i in "${dir_list[@]}"; do
       if1="${testbench}/${file}"
       golden_of1="${if1/.in/.out}"
       echo "$student_exe < $if1 | tr -d \ n > $of1; diff -w -B -i $golden_of1 $of1 > $log1"
-      ${student_exe} < "${if1}" 2> "${log1}" | tr -d '\n' > "${of1}"
+      # Spawn a child process:
+      (${student_exe} < "${if1}" 2> "${log1}" > "${of1}") & pid=$!
+      # in the background, sleep for 5 secs then kill that process
+      (sleep 3 && kill -9 $pid) & waiter=$!
+      # wait on our worker process and return the exitcode
+      wait $pid
+      exitcode=$?
+      # kill the waiter subshell, if it still runs
+      kill -9 $waiter 2>/dev/null
+      # 0 if we killed the waiter, cause that means the process finished before the waiter
+      finished_gracefully=$?
+      tmpfile=$(mktemp /tmp/run-bash.XXXXXX)
+      cat "${of1}" | tr -d '\n' > "${tmpfile}"
+      cp "${tmpfile}" "${of1}"
+      rm "${tmpfile}"
       diff -w -B -i $golden_of1 "${of1}" >> "${log1}"
       if [ $? == 0 ]; then 
-        p1_1c=80; p1_1f=10;
+        p1_1c=100; p1_1f=100;
         p1_ca=$(( $p1_ca + $p1_1c ))
         p1_cf=$(( $p1_cf + $p1_1f ))
       else
