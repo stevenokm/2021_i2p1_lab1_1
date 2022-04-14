@@ -20,13 +20,14 @@ cd ${OLDPWD}
 
 OIFS="$IFS"
 IFS=$'\n'
-dir_list=( `ls -d */` )
-dir_list=( ${dir_list[@]/$testbench} )
-dir_list=( ${dir_list[@]/$build_dir} )
-dir_list=( ${dir_list[@]/$jplag_dir} )
-dir_list=( ${dir_list[@]/$jplag_result_dir} )
-dir_list=( ${dir_list[@]/.git} )
-echo ${dir_list[@]}
+dir_list=( `ls -1 -d */` )
+#dir_list=( "${dir_list[@]/$testbench}" )
+#dir_list=( "${dir_list[@]/$build_dir}" )
+#dir_list=( "${dir_list[@]/$jplag_dir}" )
+#dir_list=( "${dir_list[@]/$jplag_result_dir}" )
+#dir_list=( "${dir_list[@]/.git}" )
+dir_count=${#dir_list[@]}
+echo ${dir_list[@]} $dir_count
 IFS="$OIFS"
 #for i in "${dir_list[@]}"; do
 #  echo $i
@@ -46,7 +47,16 @@ cd ${OLDPWD}
 rm $oc
 printf "SID, Correctness\n" > $oc
 for i in "${dir_list[@]}"; do
-  i=${i%%/}
+  if [[ \
+    "${i}" == "${testbench}" || \
+    "${i}" == "${build_dir}" || \
+    "${i}" == "${jplag_dir}" || \
+    "${i}" == "${jplag_result_dir}" || \
+    "${i}" == ".git" ]]; then
+    continue
+  fi
+
+  i=${i%%/*}
   i_list=( ${i} )
   p1_1c=0
   p1_1f=0
@@ -68,7 +78,21 @@ for i in "${dir_list[@]}"; do
       if1="${testbench}/${file}"
       golden_of1="${if1/.in/.out}"
       echo "$student_exe < $if1 | tr -d \ n > $of1; cat ${log1} >> ${of1}; diff -w -B -i $golden_of1 $of1 > $log1"
-      ${student_exe} < "${if1}" 2> "${log1}" | tr -d '\n' > "${of1}"
+      # Spawn a child process:
+      (${student_exe} < "${if1}" 2> "${log1}" > "${of1}") & pid=$!
+      # in the background, sleep for 5 secs then kill that process
+      (sleep 3 && kill -9 $pid) & waiter=$!
+      # wait on our worker process and return the exitcode
+      wait $pid
+      exitcode=$?
+      # kill the waiter subshell, if it still runs
+      kill -9 $waiter 2>/dev/null
+      # 0 if we killed the waiter, cause that means the process finished before the waiter
+      finished_gracefully=$?
+      tmpfile=$(mktemp /tmp/run-bash.XXXXXX)
+      cat "${of1}" | tr -d '\n' > "${tmpfile}"
+      cp "${tmpfile}" "${of1}"
+      rm "${tmpfile}"
       cat "${log1}" >> "${of1}"
       diff -w -B -i $golden_of1 "${of1}" >> "${log1}"
       if [ $? == 0 ]; then 
