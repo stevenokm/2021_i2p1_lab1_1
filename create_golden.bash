@@ -39,8 +39,9 @@ for i in ${dir_list[@]}; do
       if1="${testbench}/${file}"
       golden_of1="${if1/.in/.out}"
       golden_log1="${if1/.in/.log}"
-      echo "$ta_exe < $if1 2> $golden_log1 | tr -d \ n > $golden_of1"
+      echo "$ta_exe < $if1 2> $golden_log1 | tr -d \ n > $golden_of1; cat $golden_log1 >> $golden_of1"
       ${ta_exe} < $if1 2> $golden_log1 | tr -d '\n' > $golden_of1
+      cat $golden_log1 >> $golden_of1
     done
   fi
 done

@@ -44,14 +44,13 @@ cd ${OLDPWD}
 #exit
 
 rm $oc
-printf "SID, Correctness, Format\n" > $oc
+printf "SID, Correctness\n" > $oc
 for i in "${dir_list[@]}"; do
   i=${i%%/}
   i_list=( ${i} )
   p1_1c=0
   p1_1f=0
   p1_ca=0
-  p1_cf=0
   error_list=""
 
   student_exe="${build_dir}/${prefix}_${i_list[0]}"
@@ -68,13 +67,13 @@ for i in "${dir_list[@]}"; do
       log1="$i/${if1/.in/.log}"
       if1="${testbench}/${file}"
       golden_of1="${if1/.in/.out}"
-      echo "$student_exe < $if1 | tr -d \ n > $of1; diff -w -B -i $golden_of1 $of1 > $log1"
+      echo "$student_exe < $if1 | tr -d \ n > $of1; cat ${log1} >> ${of1}; diff -w -B -i $golden_of1 $of1 > $log1"
       ${student_exe} < "${if1}" 2> "${log1}" | tr -d '\n' > "${of1}"
+      cat "${log1}" >> "${of1}"
       diff -w -B -i $golden_of1 "${of1}" >> "${log1}"
       if [ $? == 0 ]; then 
-        p1_1c=80; p1_1f=10;
+        p1_1c=100;
         p1_ca=$(( $p1_ca + $p1_1c ))
-        p1_cf=$(( $p1_cf + $p1_1f ))
       else
         error_list="${error_list}, ${file}"
       fi
@@ -82,6 +81,5 @@ for i in "${dir_list[@]}"; do
   fi
 
   p1_ca=$(( $p1_ca / $if1_count ))
-  p1_cf=$(( $p1_cf / $if1_count ))
-  echo $i, $p1_ca, $p1_cf $error_list >> $oc 
+  echo $i, $p1_ca $error_list >> $oc 
 done
