@@ -74,6 +74,8 @@ $
 
 ## 2. 修改腳本 `run.bash` (or `run.ps1` in Windows)
 
+Note: 若要跳過 **建立標準答案**，請先完成 **3. 修改腳本 `CMakeLists.txt`** 後繼續。
+
 修改以下內容的 `prefix` 跟 1. 的 `<lab prefix>` 相同
 
 ### `run.bash`
