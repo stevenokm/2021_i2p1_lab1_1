@@ -1,6 +1,6 @@
 #!/bin/bash
-oc="grade.csv"
 prefix="lab1_1"
+oc="grade_${prefix}.csv"
 # remember to change both run.bash and CMakeList.txt files to the correct lab name
 testbench="testbench/"
 build_dir="build/"

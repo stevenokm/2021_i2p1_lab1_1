@@ -17,9 +17,12 @@ tags*
 *.log
 *.out
 
-grade.csv
+grade*.csv
 
 *.jar
 
 jplag
 jplag_result
+
+.vscode
+src
