@@ -110,7 +110,7 @@ foreach ($i in $dir_list) {
             $of1_content = ((Get-Content $of1) -replace '\n| |\t|\r', '').ToUpper()
             $golden_of1_content = ((Get-Content $golden_of1) -replace '\n| |\t|\r', '').ToUpper()
             if ($of1_content -and $golden_of1_content) {
-                $result = Compare-Object $of1_content $golden_of1_content
+                $result = Compare-Object $golden_of1_content $of1_content
             }
             # if the output file is empty, it will be considered as wrong
             # and use '-1' to indicate wrong
