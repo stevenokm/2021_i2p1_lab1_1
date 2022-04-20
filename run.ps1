@@ -47,7 +47,7 @@ if (!(Test-Path $build_dir)) {
 }
 Set-Location ($build_dir)
 cmake .. -G "MinGW Makefiles"
-make -k
+mingw32-make -k
 Set-Location ("..")
 
 # Create CSV file
