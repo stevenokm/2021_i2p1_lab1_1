@@ -1,5 +1,13 @@
 # 建立標準答案
 
+## 0. 安裝 CMake
+
+請從 https://cmake.org/download/ 上下載對應系統的安裝檔
+
+並參考 https://cmake.org/install/ 步驟進行安裝
+
+Note: PATH 步驟，請選擇 "Add CMake to the system PATH for all users"
+
 ## 1. 寫 TA 版本
 
 在 `TA/` 資料夾下寫 TA 版本的程式碼，並取名 `<lab prefix>_TA.cpp` (e.g. 如果 `<lab prefix>` 是 `lab1_1` 則檔名是 `lab1_1_TA.cpp`)
@@ -64,6 +72,10 @@ $
 ```
 
 # 作業批改
+
+## 0. 安裝 CMake
+
+請參考 **建立標準答案 - 0. 安裝 CMake**
 
 ## 1. 新增學生資料夾
 
