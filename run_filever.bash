@@ -8,7 +8,7 @@ jplag_dir="jplag/"
 jplag_result_dir="jplag_result/"
 
 cd ${testbench}
-if1_list=( `ls -d *.in` )
+if1_list=($(ls -d *.in))
 if1_count=${#if1_list[@]}
 #if2_list=( `ls -d ${prefix}_p2_*.in` )
 #if2_count=${#if2_list[@]}
@@ -20,7 +20,7 @@ cd ${OLDPWD}
 
 OIFS="$IFS"
 IFS=$'\n'
-dir_list=( `ls -1 -d */` )
+dir_list=($(ls -1 -d */))
 #dir_list=( "${dir_list[@]/$testbench}" )
 #dir_list=( "${dir_list[@]/$build_dir}" )
 #dir_list=( "${dir_list[@]/$jplag_dir}" )
@@ -45,19 +45,19 @@ cd ${OLDPWD}
 #exit
 
 rm $oc
-printf "SID, Correctness\n" > $oc
+printf "SID, Correctness\n" >$oc
 for i in "${dir_list[@]}"; do
-  if [[ \
-    "${i}" == "${testbench}" || \
-    "${i}" == "${build_dir}" || \
-    "${i}" == "${jplag_dir}" || \
-    "${i}" == "${jplag_result_dir}" || \
+  if [[ 
+    "${i}" == "${testbench}" ||
+    "${i}" == "${build_dir}" ||
+    "${i}" == "${jplag_dir}" ||
+    "${i}" == "${jplag_result_dir}" ||
     "${i}" == ".git" ]]; then
     continue
   fi
 
   i=${i%%/*}
-  i_list=( ${i} )
+  i_list=(${i})
   p1_1c=0
   p1_1f=0
   p1_ca=0
@@ -79,9 +79,11 @@ for i in "${dir_list[@]}"; do
       golden_of1="${if1/.in/.out}"
       echo "$student_exe $if1 ${if1}.out | tr -d \ n > $of1; cat ${log1} >> ${of1}; diff -w -B -i $golden_of1 $of1 > $log1"
       # Spawn a child process:
-      (${student_exe} "${if1}" "${if1}.out" 2> "${log1}" > "${of1}") & pid=$!
+      (${student_exe} "${if1}" "${if1}.out" 2>"${log1}" >"${of1}") &
+      pid=$!
       # in the background, sleep for 5 secs then kill that process
-      (sleep 3 && kill -9 $pid) & waiter=$!
+      (sleep 3 && kill -9 $pid) &
+      waiter=$!
       # wait on our worker process and return the exitcode
       wait $pid
       exitcode=$?
@@ -90,20 +92,20 @@ for i in "${dir_list[@]}"; do
       # 0 if we killed the waiter, cause that means the process finished before the waiter
       finished_gracefully=$?
       tmpfile=$(mktemp /tmp/run-bash.XXXXXX)
-      cat "${of1}" | tr -d '\n' > "${tmpfile}"
+      cat "${of1}" | tr -d '\n' >"${tmpfile}"
       cp "${tmpfile}" "${of1}"
       rm "${tmpfile}"
-      cat "${log1}" >> "${of1}"
-      diff -w -B -i $golden_of1 "${of1}" >> "${log1}"
-      if [ $? == 0 ]; then 
-        p1_1c=100;
-        p1_ca=$(( $p1_ca + $p1_1c ))
+      cat "${log1}" >>"${of1}"
+      diff -w -B -i $golden_of1 "${of1}" >>"${log1}"
+      if [ $? == 0 ]; then
+        p1_1c=100
+        p1_ca=$(($p1_ca + $p1_1c))
       else
         error_list="${error_list}, ${file}"
       fi
     done
   fi
 
-  p1_ca=$(( $p1_ca / $if1_count ))
-  echo $i, $p1_ca $error_list >> $oc 
+  p1_ca=$(($p1_ca / $if1_count))
+  echo $i, $p1_ca $error_list >>$oc
 done

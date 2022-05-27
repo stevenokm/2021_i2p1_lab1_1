@@ -5,7 +5,7 @@ testbench="testbench/"
 build_dir="build/"
 
 cd ${testbench}
-if1_list=( `ls -d ${prefix}_*.in` )
+if1_list=($(ls -d ${prefix}_*.in))
 if1_count=${#if1_list[@]}
 #if2_list=( `ls -d ${prefix}_p2_*.in` )
 #if2_count=${#if2_list[@]}
@@ -15,7 +15,7 @@ echo ${if1_list[@]} $if1_count
 #echo ${golden_of1[@]} ${#golden_of1[@]}
 cd ${OLDPWD}
 
-dir_list=( "TA/" )
+dir_list=("TA/")
 echo ${dir_list[@]}
 #exit
 
@@ -30,7 +30,7 @@ cd ${OLDPWD}
 
 for i in ${dir_list[@]}; do
   i=${i%%/}
-  
+
   ta_exe="${build_dir}/${prefix}_${i}"
   if [ ! -f $ta_exe ]; then
     echo "$ta_exe not exist, skip."
@@ -40,8 +40,8 @@ for i in ${dir_list[@]}; do
       golden_of1="${if1/.in/.out}"
       golden_log1="${if1/.in/.log}"
       echo "$ta_exe < $if1 2> $golden_log1 | tr -d \ n > $golden_of1; cat $golden_log1 >> $golden_of1"
-      ${ta_exe} < $if1 2> $golden_log1 | tr -d '\n' > $golden_of1
-      cat $golden_log1 >> $golden_of1
+      ${ta_exe} <$if1 2>$golden_log1 | tr -d '\n' >$golden_of1
+      cat $golden_log1 >>$golden_of1
     done
   fi
 done
