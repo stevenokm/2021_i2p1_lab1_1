@@ -1,3 +1,11 @@
+# 設定測資
+
+須將測資放於 `testbench/` 資料夾中，並且檔名為 `<lab prefix>_*.in` (e.g. 如果 `<lab prefix>` 是 `lab1_1` 則檔名是 `lab1_1_001.in`, `lab1_1_002.in`, ... )。
+
+## Filever 
+
+若為檔案版本的測資，則檔名為 `*.in` 即可。 並將預期輸出的檔案輸出至指令列 (i.e. 使用 `cout`, `printf`, `puts`, ... 輸出最後答案)。
+
 # 建立標準答案
 
 ## 0. 安裝 CMake
@@ -12,7 +20,7 @@ Note: PATH 步驟，請選擇 "Add CMake to the system PATH for all users"
 
 在 `TA/` 資料夾下寫 TA 版本的程式碼，並取名 `<lab prefix>_TA.cpp` (e.g. 如果 `<lab prefix>` 是 `lab1_1` 則檔名是 `lab1_1_TA.cpp`)
 
-## 2. 修改腳本 `create_golden.bash`
+## 2. 修改腳本 `create_golden.bash` 或 `create_golden_filever.bash`
 
 修改以下內容的 `prefix` 跟 1. 的 `<lab prefix>` 相同
 
@@ -38,7 +46,7 @@ FOREACH(subdir ${SUBDIRS})
   get_filename_component(bin_name ${subdir} NAME)
 ```
 
-## 4. 執行 `create_golden.bash`
+## 4. 執行 `create_golden.bash` 或 `create_golden_filever.bash`
 
 ```console
 $ bash create_golden.bash
@@ -84,13 +92,13 @@ $
 * 學生的檔案需要放在 `<學號>/` 資料夾內 (e.g. `106062802/`)
 * 學生的 `main` 一定要放在 `<學號>/<lab prefix>_<學號>.cpp` 內 (e.g. `106062802/lab1_1_106062802.cpp`)
 
-## 2. 修改腳本 `run.bash` (or `run.ps1` in Windows)
+## 2. 修改腳本 `run.bash` (or `run.ps1` in Windows) 或 `run_filever.bash`
 
 Note: 若要跳過 **建立標準答案**，請先完成 **3. 修改腳本 `CMakeLists.txt`** 後繼續。
 
 修改以下內容的 `prefix` 跟 1. 的 `<lab prefix>` 相同
 
-### `run.bash`
+### `run.bash` 或 `run_filever.bash`
 
 ```bash
 #!/bin/bash
@@ -112,9 +120,9 @@ $testbench = "testbench"
 $build_dir = "build"
 ```
 
-## 3. 執行 `run.bash` (or `run.ps1` in Windows)
+## 3. 執行 `run.bash` (or `run.ps1` in Windows) 或 `run_filever.bash`
 
-### `run.bash`
+### `run.bash` 或 `run_filever.bash`
 
 ```console
 $ bash run.bash
