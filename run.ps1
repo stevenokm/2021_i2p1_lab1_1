@@ -74,9 +74,9 @@ foreach ($i in $dir_list) {
     else {
         foreach ($file in $if1_list) {
             $if1 = $file
-            $of1 = $i + "\" + $if1.Split(".")[0] + ".out"
-            $log1 = $i + "\" + $if1.Split(".")[0] + ".log"
-            $golden_of1 = $testbench + "\" + $if1.Split(".")[0] + ".out"
+            $of1 = $i + "\" + $if1.Replace(".in", ".out")
+            $log1 = $i + "\" + $if1.Replace(".in", ".log")
+            $golden_of1 = $testbench + "\" + $if1.Replace(".in", ".out")
             $if1 = $testbench + "\" + $if1
             Write-Output ("$student_exe < $if1 | tr -d \n > $of1; cat ${log1} >> ${of1};" `
                     + " diff -w -B -i $golden_of1 $of1 > $log1")
